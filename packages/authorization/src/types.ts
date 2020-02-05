@@ -92,6 +92,12 @@ export interface AuthorizationContext {
    * Context for the invocation
    */
   invocationContext: InvocationContext;
+
+  /**
+   * Other authorization context fields.
+   * For example: object instance level fields like resourceId
+   */
+  [property: string]: any;
 }
 
 /**

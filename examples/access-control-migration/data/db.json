@@ -1,0 +1,22 @@
+{
+  "ids": {
+    "Project": 3,
+    "Team": 3,
+    "User": 4
+  },
+  "models": {
+    "Project": {
+      "1": "{\"id\":1,\"name\":\"project1\",\"balance\":0,\"ownerId\":1}",
+      "2": "{\"id\":2,\"name\":\"project2\",\"balance\":0,\"ownerId\":2}"
+    },
+    "Team": {
+      "1": "{\"id\":1,\"ownerId\":1,\"memberIds\":[1,2]}",
+      "2": "{\"id\":2,\"ownerId\":2,\"memberIds\":[2]}"
+    },
+    "User": {
+      "1": "{\"id\":1,\"username\":\"John\",\"email\":\"john@doe.com\",\"password\":\"opensesame\"}",
+      "2": "{\"id\":2,\"username\":\"Jane\",\"email\":\"jane@doe.com\",\"password\":\"opensesame\"}",
+      "3": "{\"id\":3,\"username\":\"Bob\",\"email\":\"bob@projects.com\",\"password\":\"opensesame\"}"
+    }
+  }
+}
