@@ -97,6 +97,7 @@ export interface AuthorizationContext {
    * Other authorization context fields.
    * For example: object instance level fields like resourceId
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [property: string]: any;
 }
 

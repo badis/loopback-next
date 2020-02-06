@@ -1,11 +1,11 @@
 // Uncomment these imports to begin using these cool features!
 
 import {inject} from '@loopback/context';
-import { post, requestBody } from '@loopback/rest';
-import { Credentials } from '../services/user.service';
-import { UserServiceBindings, TokenServiceBindings } from '../keys';
-import { UserService, TokenService } from '@loopback/authentication';
-import { User } from '../models';
+import {post, requestBody} from '@loopback/rest';
+import {Credentials} from '../services/user.service';
+import {UserServiceBindings, TokenServiceBindings} from '../keys';
+import {UserService, TokenService} from '@loopback/authentication';
+import {User} from '../models';
 
 const CredentialsSchema = {
   type: 'object',

@@ -6,9 +6,9 @@ import {
   CoreBindings,
   Application, // The interface
 } from '@loopback/core';
-import { ProjectRepository } from '../repositories/project.repository';
-import { TeamRepository } from '../repositories/team.repository';
-import { UserRepository } from '../repositories/user.repository';
+import {ProjectRepository} from '../repositories/project.repository';
+import {TeamRepository} from '../repositories/team.repository';
+import {UserRepository} from '../repositories/user.repository';
 
 /**
  * This class will be bound to the application as a `LifeCycleObserver` during
@@ -18,7 +18,8 @@ import { UserRepository } from '../repositories/user.repository';
 export class SampleObserver implements LifeCycleObserver {
   constructor(
     @inject(CoreBindings.APPLICATION_INSTANCE) private app: Application,
-    @inject('repositories.ProjectRepository') private projectRepo: ProjectRepository,
+    @inject('repositories.ProjectRepository')
+    private projectRepo: ProjectRepository,
     @inject('repositories.TeamRepository') private teamRepo: TeamRepository,
     @inject('repositories.UserRepository') private userRepo: UserRepository,
   ) {}
@@ -44,7 +45,12 @@ export class SampleObserver implements LifeCycleObserver {
     const users = [
       {id: 1, username: 'John', email: 'john@doe.com', password: 'opensesame'},
       {id: 2, username: 'Jane', email: 'jane@doe.com', password: 'opensesame'},
-      {id: 3, username: 'Bob', email: 'bob@projects.com', password: 'opensesame'}
+      {
+        id: 3,
+        username: 'Bob',
+        email: 'bob@projects.com',
+        password: 'opensesame',
+      },
     ];
 
     for (const u of users) {
@@ -56,7 +62,7 @@ export class SampleObserver implements LifeCycleObserver {
   async createProjects(): Promise<void> {
     const projects = [
       {id: 1, name: 'project1', balance: 0, ownerId: 1},
-      {id: 2, name: 'project2', balance: 0, ownerId: 2}
+      {id: 2, name: 'project2', balance: 0, ownerId: 2},
     ];
 
     for (const p of projects) {

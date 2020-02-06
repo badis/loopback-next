@@ -8,9 +8,7 @@ export class TeamRepository extends DefaultCrudRepository<
   typeof Team.prototype.id,
   TeamRelations
 > {
-  constructor(
-    @inject('datasources.db') dataSource: DbDataSource,
-  ) {
+  constructor(@inject('datasources.db') dataSource: DbDataSource) {
     super(Team, dataSource);
   }
 }

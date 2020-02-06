@@ -3,7 +3,6 @@ import {
   AuthorizationMetadata,
   AuthorizationDecision,
 } from '@loopback/authorization';
-import _ from 'lodash';
 
 // Instance level authorizer
 // This is a WORKAROUND to modify the authorization context
@@ -18,7 +17,10 @@ export async function assignProjectInstanceId(
   // the current AuthrozationCtx is designed for class level object,
   // like projects
   const projectId = authorizationCtx.invocationContext.args[0];
-  const resourceName = getResourceName(metadata.resource ?? authorizationCtx.resource, projectId);
+  const resourceName = getResourceName(
+    metadata.resource ?? authorizationCtx.resource,
+    projectId,
+  );
   // resourceId will override the resource name from metadata
   authorizationCtx.resourceId = resourceName;
   return AuthorizationDecision.ABSTAIN;

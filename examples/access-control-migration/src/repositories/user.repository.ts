@@ -1,4 +1,8 @@
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {
+  DefaultCrudRepository,
+  repository,
+  HasManyRepositoryFactory,
+} from '@loopback/repository';
 import {User, UserRelations, Team} from '../models';
 import {DbDataSource} from '../datasources';
 import {inject, Getter} from '@loopback/core';
@@ -9,14 +13,21 @@ export class UserRepository extends DefaultCrudRepository<
   typeof User.prototype.id,
   UserRelations
 > {
-
-  public readonly teams: HasManyRepositoryFactory<Team, typeof User.prototype.id>;
+  public readonly teams: HasManyRepositoryFactory<
+    Team,
+    typeof User.prototype.id
+  >;
 
   constructor(
-    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('TeamRepository') protected teamRepositoryGetter: Getter<TeamRepository>,
+    @inject('datasources.db') dataSource: DbDataSource,
+    @repository.getter('TeamRepository')
+    protected teamRepositoryGetter: Getter<TeamRepository>,
   ) {
     super(User, dataSource);
-    this.teams = this.createHasManyRepositoryFactoryFor('teams', teamRepositoryGetter,);
+    this.teams = this.createHasManyRepositoryFactoryFor(
+      'teams',
+      teamRepositoryGetter,
+    );
     this.registerInclusionResolver('teams', this.teams.inclusionResolver);
   }
 }

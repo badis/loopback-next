@@ -1,18 +1,11 @@
 import _ from 'lodash';
-import {
-  repository,
-} from '@loopback/repository';
-import {
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-} from '@loopback/rest';
-import { Project } from '../models';
-import { ProjectRepository } from '../repositories';
-import { authenticate } from '@loopback/authentication';
-import { authorize } from '@loopback/authorization';
-import { assignProjectInstanceId } from '../services/assign-project-instance-id.voter';
+import {repository} from '@loopback/repository';
+import {param, get, getModelSchemaRef, patch} from '@loopback/rest';
+import {Project} from '../models';
+import {ProjectRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
+import {assignProjectInstanceId} from '../services/assign-project-instance-id.voter';
 
 // TBD: refactor the ACLs to a separate file
 const RESOURCE_NAME = 'project';
@@ -26,28 +19,28 @@ const ACL_PROJECT = {
     resource: RESOURCE_NAME,
     scopes: ['show-balance'],
     allowedRoles: ['owner', 'team'],
-    voters: [assignProjectInstanceId]
+    voters: [assignProjectInstanceId],
   },
-  'donate': {
+  donate: {
     resource: RESOURCE_NAME,
     scopes: ['donate'],
     allowedRoles: ['admin', 'owner', 'team'],
-    voters: [assignProjectInstanceId]
+    voters: [assignProjectInstanceId],
   },
-  'withdraw': {
+  withdraw: {
     resource: RESOURCE_NAME,
     scopes: ['withdraw'],
     allowedRoles: ['owner'],
-    voters: [assignProjectInstanceId]
-  }
-}
+    voters: [assignProjectInstanceId],
+  },
+};
 
 // TODO: add other CRUD methods and corresponding ACL
 export class ProjectController {
   constructor(
     @repository(ProjectRepository)
     public projectRepository: ProjectRepository,
-  ) { }
+  ) {}
 
   // LIST PROJECTS (balance is not public)
   @get('/list-projects', {
@@ -60,7 +53,7 @@ export class ProjectController {
               type: 'array',
               items: getModelSchemaRef(Project, {
                 title: 'ProjectPublic',
-                exclude: ['balance']
+                exclude: ['balance'],
               }),
             },
           },
@@ -70,7 +63,7 @@ export class ProjectController {
   })
   async listProjects(): Promise<Omit<Project, 'balance'>[]> {
     const projects = await this.projectRepository.find();
-    return projects.map(p => _.omit(p, 'balance'))
+    return projects.map(p => _.omit(p, 'balance'));
   }
 
   // VIWE ALL PROJECTS (including balance)
@@ -109,10 +102,8 @@ export class ProjectController {
     },
   })
   @authenticate('jwt')
-  @authorize(ACL_PROJECT["show-balance"])
-  async findById(
-    @param.path.number('id') id: number,
-  ): Promise<Project> {
+  @authorize(ACL_PROJECT['show-balance'])
+  async findById(@param.path.number('id') id: number): Promise<Project> {
     return this.projectRepository.findById(id);
   }
 
@@ -131,7 +122,9 @@ export class ProjectController {
     @param.query.number('amount') amount: number,
   ): Promise<void> {
     const project = await this.projectRepository.findById(id);
-    await this.projectRepository.updateById(id, { balance: project.balance + amount });
+    await this.projectRepository.updateById(id, {
+      balance: project.balance + amount,
+    });
     // TBD: return new balance
   }
 
@@ -153,7 +146,9 @@ export class ProjectController {
     if (project.balance < amount) {
       throw new Error('Balance is not enough.');
     }
-    await this.projectRepository.updateById(id, { balance: project.balance - amount });
+    await this.projectRepository.updateById(id, {
+      balance: project.balance - amount,
+    });
     // TBD: return new balance
   }
 }

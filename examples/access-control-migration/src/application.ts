@@ -10,16 +10,27 @@ import {RestApplication} from '@loopback/rest';
 import {RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import fs from 'fs';
 import {MySequence} from './sequence';
-import { TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './keys';
-import { JWTService } from './services/jwt.service';
-import { MyUserService } from './services/user.service';
-import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
-import { AuthorizationComponent, AuthorizationTags } from '@loopback/authorization';
-import { getCasbinEnforcerByName } from './services/casbin.enforcers';
-import { CasbinAuthorizationProvider } from './services/casbin.authorizer';
-import { JWTAuthenticationStrategy } from './services/jwt.auth.strategy';
-import { SECURITY_SCHEME_SPEC } from './services/security.spec';
+import {
+  TokenServiceBindings,
+  TokenServiceConstants,
+  UserServiceBindings,
+} from './keys';
+import {JWTService} from './services/jwt.service';
+import {MyUserService} from './services/user.service';
+import {
+  AuthenticationComponent,
+  registerAuthenticationStrategy,
+} from '@loopback/authentication';
+import {
+  AuthorizationComponent,
+  AuthorizationTags,
+} from '@loopback/authorization';
+import {getCasbinEnforcerByName} from './services/casbin.enforcers';
+import {CasbinAuthorizationProvider} from './services/casbin.authorizer';
+import {JWTAuthenticationStrategy} from './services/jwt.auth.strategy';
+import {SECURITY_SCHEME_SPEC} from './services/security.spec';
 
 /**
  * Information from package.json
@@ -31,9 +42,7 @@ export interface PackageInfo {
 }
 export const PackageKey = BindingKey.create<PackageInfo>('application.package');
 
-const pkg: PackageInfo = require('../package.json');
-
-export class TodoListApplication extends BootMixin(
+export class AccessControlApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
@@ -65,6 +74,12 @@ export class TodoListApplication extends BootMixin(
     };
   }
 
+  async start() {
+    const dbPath = require.resolve('../data/db.json');
+    if (fs.existsSync(dbPath)) fs.writeFileSync(dbPath, '');
+    return super.start();
+  }
+
   setUpBindings(): void {
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
@@ -89,13 +104,13 @@ export class TodoListApplication extends BootMixin(
   addSecuritySpec(): void {
     this.api({
       openapi: '3.0.0',
-      info: {title: pkg.name, version: pkg.version},
+      info: {title: 'access-control-example', version: '1.0.0'},
       paths: {},
       components: {securitySchemes: SECURITY_SCHEME_SPEC},
       security: [
         {
-          jwt: []
-        }
+          jwt: [],
+        },
       ],
       servers: [{url: '/'}],
     });

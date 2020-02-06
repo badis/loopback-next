@@ -3,11 +3,11 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {TodoListApplication} from './application';
+import {AccessControlApplication} from './application';
 import {ApplicationConfig} from '@loopback/core';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new TodoListApplication(options);
+  const app = new AccessControlApplication(options);
   await app.boot();
   await app.start();
 
@@ -17,7 +17,7 @@ export async function main(options: ApplicationConfig = {}) {
 }
 
 // re-exports for our benchmark, not needed for the tutorial itself
-export {TodoListApplication};
+export {AccessControlApplication};
 
 export * from './models';
 export * from './repositories';

@@ -1,7 +1,7 @@
 import {BindingKey} from '@loopback/context';
 import {TokenService, UserService} from '@loopback/authentication';
-import { User } from './models';
-import { Credentials } from './services/user.service';
+import {User} from './models';
+import {Credentials} from './services/user.service';
 
 export namespace TokenServiceConstants {
   export const TOKEN_SECRET_VALUE = 'myjwts3cr3t';

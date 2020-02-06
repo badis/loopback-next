@@ -1,10 +1,12 @@
 import * as casbin from 'casbin';
 import path from 'path';
 
-export async function getCasbinEnforcerByName(name: string): Promise<casbin.Enforcer | undefined> {
-  if (name == 'admin') return createAdminEnforcer();
-  if (name == 'owner') return createOwnerEnforcer();
-  if (name == 'team') return createTeamEnforcer();
+export async function getCasbinEnforcerByName(
+  name: string,
+): Promise<casbin.Enforcer | undefined> {
+  if (name === 'admin') return createAdminEnforcer();
+  if (name === 'owner') return createOwnerEnforcer();
+  if (name === 'team') return createTeamEnforcer();
   return undefined;
 }
 

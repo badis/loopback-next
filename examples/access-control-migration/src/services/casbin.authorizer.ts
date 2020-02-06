@@ -1,4 +1,4 @@
-import { Provider, inject } from '@loopback/core';
+import {Provider, inject} from '@loopback/core';
 import {
   Authorizer,
   AuthorizationContext,
@@ -7,10 +7,14 @@ import {
   AuthorizationDecision,
 } from '@loopback/authorization';
 import * as casbin from 'casbin';
+const debug = require('debug')('loopback:example:acl');
 
 // Class level authorizer
 export class CasbinAuthorizationProvider implements Provider<Authorizer> {
-  constructor(@inject('casbin.enforcer.factory') private enforcerFactory: (name: string) => casbin.Enforcer) { }
+  constructor(
+    @inject('casbin.enforcer.factory')
+    private enforcerFactory: (name: string) => Promise<casbin.Enforcer>,
+  ) {}
 
   /**
    * @returns authenticateFn
@@ -24,7 +28,10 @@ export class CasbinAuthorizationProvider implements Provider<Authorizer> {
     metadata: AuthorizationMetadata,
   ): Promise<AuthorizationDecision> {
     const subject = this.getUserName(authorizationCtx.principals[0].id);
-    const object = authorizationCtx.resourceId ?? metadata.resource ?? authorizationCtx.resource;
+    const object =
+      authorizationCtx.resourceId ??
+      metadata.resource ??
+      authorizationCtx.resource;
 
     const request: AuthorizationRequest = {
       subject,
@@ -37,26 +44,25 @@ export class CasbinAuthorizationProvider implements Provider<Authorizer> {
     if (!allowedRoles) return AuthorizationDecision.ALLOW;
     if (allowedRoles.length < 1) return AuthorizationDecision.DENY;
 
-    let allow: boolean = false;
+    let allow = false;
 
     for (const role of allowedRoles) {
       const enforcer = await this.enforcerFactory(role);
 
-      const allowed_by_role = await enforcer.enforce(
+      const allowedByRole = await enforcer.enforce(
         request.subject,
         request.object,
         request.action,
       );
-      // remove debug
-      console.log(`role: ${role}, result: ${allowed_by_role}`);
-      if (allowed_by_role) {
+
+      debug(`authorizer role: ${role}, result: ${allowedByRole}`);
+      if (allowedByRole) {
         allow = true;
         break;
       }
     }
 
-    // remove debug
-    console.log('result: ', allow);
+    debug('final result: ', allow);
 
     if (allow) return AuthorizationDecision.ALLOW;
     else if (allow === false) return AuthorizationDecision.DENY;
