@@ -29,9 +29,14 @@ export class MyUserService implements UserService<User, Credentials> {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
     }
 
+    const credentialsFound = await this.userRepository.findCredentials(
+      foundUser.id,
+    );
+    if (!credentialsFound) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
     // TBD: Hash password
-    // TBD: extract Credentials into another model
-    const passwordMatched = foundUser.password === credentials.password;
+    const passwordMatched = credentialsFound.password === credentials.password;
 
     if (!passwordMatched) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);

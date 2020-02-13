@@ -1,5 +1,6 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, model, property, hasMany, hasOne} from '@loopback/repository';
 import {Team} from './team.model';
+import {UserCredentials} from './user-credentials.model';
 
 @model({settings: {strict: false}})
 export class User extends Entity {
@@ -22,14 +23,11 @@ export class User extends Entity {
   })
   email: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  password: string;
-
   @hasMany(() => Team, {keyTo: 'ownerId'})
   teams: Team[];
+
+  @hasOne(() => UserCredentials)
+  userCredentials: UserCredentials;
   // Define well-known properties here
 
   // Indexer property to allow additional data

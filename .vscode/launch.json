@@ -13,7 +13,7 @@
       "args": [
         "--config",
         "${workspaceRoot}/packages/build/config/.mocharc.json",
-        "packages/*/dist/__tests__/**/*.js",
+        "examples/*/dist/__tests__/**/*.js",
         "-t",
         "0"
       ]

@@ -7,7 +7,7 @@ import {AnyObject} from '@loopback/repository';
 import {Client, createRestAppClient} from '@loopback/testlab';
 import {AccessControlApplication} from '../../';
 
-describe('AccessControlApplication', () => {
+describe('AccessControlApplication - permissions', () => {
   let app: AccessControlApplication;
   let client: Client;
   let token: string;
@@ -16,7 +16,10 @@ describe('AccessControlApplication', () => {
   before(() => {
     client = createRestAppClient(app);
   });
-  after(() => app.stop());
+  after(async () => {
+    process.env.SEED_DATA = undefined;
+    await app.stop();
+  });
 
   const USER_CREDENTIAL_MAPPING: AnyObject = {
     admin: ['bob@projects.com', 'opensesame'],
@@ -68,6 +71,12 @@ describe('AccessControlApplication', () => {
     testPermission('anonymous', permissions);
   });
 
+  /**
+   * Test a role's permission when visit the 5 endpoints in the
+   * project controller
+   * @param role
+   * @param permissions
+   */
   function testPermission(
     role: string,
     permissions: {[operation: string]: boolean},
@@ -167,7 +176,14 @@ describe('AccessControlApplication', () => {
    */
 
   async function givenRunningApplication() {
+    process.env.SEED_DATA = '1';
     app = new AccessControlApplication();
+
+    app.bind('datasources.config.db').to({
+      name: 'db',
+      connector: 'memory',
+    });
+
     await app.boot();
     // Start Application
     await app.start();

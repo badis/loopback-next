@@ -3,22 +3,6 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig, BindingKey} from '@loopback/core';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
-import {RestExplorerComponent} from '@loopback/rest-explorer';
-import {ServiceMixin} from '@loopback/service-proxy';
-import path from 'path';
-import fs from 'fs';
-import {MySequence} from './sequence';
-import {
-  TokenServiceBindings,
-  TokenServiceConstants,
-  UserServiceBindings,
-} from './keys';
-import {JWTService} from './services/jwt.service';
-import {MyUserService} from './services/user.service';
 import {
   AuthenticationComponent,
   registerAuthenticationStrategy,
@@ -27,10 +11,25 @@ import {
   AuthorizationComponent,
   AuthorizationTags,
 } from '@loopback/authorization';
-import {getCasbinEnforcerByName} from './services/casbin.enforcers';
+import {BootMixin} from '@loopback/boot';
+import {ApplicationConfig, BindingKey} from '@loopback/core';
+import {RepositoryMixin} from '@loopback/repository';
+import {RestApplication} from '@loopback/rest';
+import {RestExplorerComponent} from '@loopback/rest-explorer';
+import {ServiceMixin} from '@loopback/service-proxy';
+import path from 'path';
+import {
+  TokenServiceBindings,
+  TokenServiceConstants,
+  UserServiceBindings,
+} from './keys';
+import {MySequence} from './sequence';
 import {CasbinAuthorizationProvider} from './services/casbin.authorizer';
+import {getCasbinEnforcerByName} from './services/casbin.enforcers';
 import {JWTAuthenticationStrategy} from './services/jwt.auth.strategy';
+import {JWTService} from './services/jwt.service';
 import {SECURITY_SCHEME_SPEC} from './services/security.spec';
+import {MyUserService} from './services/user.service';
 
 /**
  * Information from package.json
@@ -72,12 +71,6 @@ export class AccessControlApplication extends BootMixin(
         nested: true,
       },
     };
-  }
-
-  async start() {
-    const dbPath = require.resolve('../data/db.json');
-    if (fs.existsSync(dbPath)) fs.writeFileSync(dbPath, '');
-    return super.start();
   }
 
   setUpBindings(): void {

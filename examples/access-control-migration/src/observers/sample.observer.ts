@@ -1,11 +1,11 @@
 import {
-  /* inject, Application, CoreBindings, */
+  Application,
+  CoreBindings,
+  inject,
   lifeCycleObserver, // The decorator
   LifeCycleObserver,
-  inject,
-  CoreBindings,
-  Application, // The interface
 } from '@loopback/core';
+import * as _ from 'lodash';
 import {ProjectRepository} from '../repositories/project.repository';
 import {TeamRepository} from '../repositories/team.repository';
 import {UserRepository} from '../repositories/user.repository';
@@ -29,9 +29,11 @@ export class SampleObserver implements LifeCycleObserver {
    */
   async start(): Promise<void> {
     // Add your logic for start
-    await this.createUsers();
-    await this.createProjects();
-    await this.createTeams();
+    if (process.env.SEED_DATA) {
+      await this.createUsers();
+      await this.createProjects();
+      await this.createTeams();
+    }
   }
 
   /**
@@ -54,8 +56,10 @@ export class SampleObserver implements LifeCycleObserver {
     ];
 
     for (const u of users) {
-      const created = await this.userRepo.create(u);
-      console.log(created);
+      await this.userRepo.create(_.pick(u, ['id', 'email', 'username']));
+      await this.userRepo
+        .userCredentials(u.id)
+        .create({password: u.password, userId: u.id});
     }
   }
 
@@ -66,8 +70,7 @@ export class SampleObserver implements LifeCycleObserver {
     ];
 
     for (const p of projects) {
-      const created = await this.projectRepo.create(p);
-      console.log(created);
+      await this.projectRepo.create(p);
     }
   }
 
@@ -78,8 +81,7 @@ export class SampleObserver implements LifeCycleObserver {
     ];
 
     for (const t of teams) {
-      const created = await this.teamRepo.create(t);
-      console.log(created);
+      await this.teamRepo.create(t);
     }
   }
 }

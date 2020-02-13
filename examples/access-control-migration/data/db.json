@@ -2,11 +2,12 @@
   "ids": {
     "Project": 3,
     "Team": 3,
-    "User": 4
+    "User": 4,
+    "UserCredentials": 4
   },
   "models": {
     "Project": {
-      "1": "{\"id\":1,\"name\":\"project1\",\"balance\":null,\"ownerId\":1}",
+      "1": "{\"id\":1,\"name\":\"project1\",\"balance\":0,\"ownerId\":1}",
       "2": "{\"id\":2,\"name\":\"project2\",\"balance\":0,\"ownerId\":2}"
     },
     "Team": {
@@ -14,9 +15,14 @@
       "2": "{\"id\":2,\"ownerId\":2,\"memberIds\":[2]}"
     },
     "User": {
-      "1": "{\"id\":1,\"username\":\"John\",\"email\":\"john@doe.com\",\"password\":\"opensesame\"}",
-      "2": "{\"id\":2,\"username\":\"Jane\",\"email\":\"jane@doe.com\",\"password\":\"opensesame\"}",
-      "3": "{\"id\":3,\"username\":\"Bob\",\"email\":\"bob@projects.com\",\"password\":\"opensesame\"}"
+      "1": "{\"id\":1,\"username\":\"John\",\"email\":\"john@doe.com\"}",
+      "2": "{\"id\":2,\"username\":\"Jane\",\"email\":\"jane@doe.com\"}",
+      "3": "{\"id\":3,\"username\":\"Bob\",\"email\":\"bob@projects.com\"}"
+    },
+    "UserCredentials": {
+      "1": "{\"password\":\"opensesame\",\"userId\":1,\"id\":1}",
+      "2": "{\"password\":\"opensesame\",\"userId\":2,\"id\":2}",
+      "3": "{\"password\":\"opensesame\",\"userId\":3,\"id\":3}"
     }
   }
 }
