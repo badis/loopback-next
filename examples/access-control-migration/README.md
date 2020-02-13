@@ -30,45 +30,18 @@ npm i -g @loopback/cli
 
 ## Tutorial
 
-To follow this tutorial, begin with the
-[Create your app scaffolding](http://loopback.io/doc/en/lb4/todo-tutorial-scaffolding.html)
-section.
-
-### Steps
-
-1.  [Create your app scaffolding](http://loopback.io/doc/en/lb4/todo-tutorial-scaffolding.html)
-2.  [Add your Todo model](http://loopback.io/doc/en/lb4/todo-tutorial-model.html)
-3.  [Add a datasource](http://loopback.io/doc/en/lb4/todo-tutorial-datasource.html)
-4.  [Add a repository](http://loopback.io/doc/en/lb4/todo-tutorial-repository.html)
-5.  [Add a controller](http://loopback.io/doc/en/lb4/todo-tutorial-controller.html)
-6.  [Putting it all together](http://loopback.io/doc/en/lb4/todo-tutorial-putting-it-together.html)
-7.  Bonus:
-    [Integrate with a geo-coding service](http://loopback.io/doc/en/lb4/todo-tutorial-geocoding-service.html)
+TBD
 
 ## Try it out
 
 If you'd like to see the final results of this tutorial as an example
 application, follow these steps:
 
-1.  Run the `lb4 example` command to select and clone the todo repository:
+```sh
+  $ npm start
 
-    ```sh
-    lb4 example todo
-    ```
-
-2.  Switch to the directory.
-
-    ```sh
-    cd loopback4-example-todo
-    ```
-
-3.  Finally, start the application!
-
-    ```sh
-    $ npm start
-
-    Server is running at http://127.0.0.1:3000
-    ```
+  Server is running at http://127.0.0.1:3000
+```
 
 Feel free to look around in the application's code to get a feel for how it
 works. If you're interested in learning how to build it step-by-step, then
