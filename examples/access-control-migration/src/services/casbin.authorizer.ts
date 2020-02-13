@@ -1,11 +1,11 @@
-import {Provider, inject} from '@loopback/core';
 import {
-  Authorizer,
   AuthorizationContext,
+  AuthorizationDecision,
   AuthorizationMetadata,
   AuthorizationRequest,
-  AuthorizationDecision,
+  Authorizer,
 } from '@loopback/authorization';
+import {inject, Provider} from '@loopback/core';
 import * as casbin from 'casbin';
 const debug = require('debug')('loopback:example:acl');
 
@@ -46,6 +46,7 @@ export class CasbinAuthorizationProvider implements Provider<Authorizer> {
 
     let allow = false;
 
+    // An optimization for ONLY searching among the allowed roles' policies
     for (const role of allowedRoles) {
       const enforcer = await this.enforcerFactory(role);
 

@@ -1,21 +1,23 @@
 import {
   AuthorizationContext,
-  AuthorizationMetadata,
   AuthorizationDecision,
+  AuthorizationMetadata,
 } from '@loopback/authorization';
 
-// Instance level authorizer
-// This is a WORKAROUND to modify the authorization context
-// It is not used for making a decision, so just returns ABSTAIN
+/**
+ * Instance level authorizer for known endpoints
+ * - 'projects/{id}/show-balance'
+ * - 'projects/{id}/donate'
+ * - 'projects/{id}/withdraw'
+ * This function is used to modify the authorization context.
+ * It is not used for making a decision, so just returns ABSTAIN
+ * @param authorizationCtx
+ * @param metadata
+ */
 export async function assignProjectInstanceId(
   authorizationCtx: AuthorizationContext,
   metadata: AuthorizationMetadata,
 ) {
-  // hard-coded for a collection of known endpoints
-  // TBD(FEAT): We should support instance level context for object,
-  // like project1, project2, project3
-  // the current AuthrozationCtx is designed for class level object,
-  // like projects
   const projectId = authorizationCtx.invocationContext.args[0];
   const resourceName = getResourceName(
     metadata.resource ?? authorizationCtx.resource,
@@ -26,9 +28,12 @@ export async function assignProjectInstanceId(
   return AuthorizationDecision.ABSTAIN;
 }
 
-// TBD: REFACTOR to a casbin util file
-// Generate the resource name according to the naming convention
-// in casbin policy
+/**
+ * Generate the resource name according to the naming convention
+ * in casbin policy
+ * @param resource resource name
+ * @param id resource instance's id
+ */
 function getResourceName(resource: string, id?: number): string {
   // instance level name
   if (id) return `${resource}${id}`;
