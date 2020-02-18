@@ -883,16 +883,129 @@ paths:
     await server.stop();
   });
 
-  it('register controller routes under routes.*', async () => {
+  it('registers controller routes under routes.*', async () => {
     const server = await givenAServer();
     server.controller(DummyController);
     await server.start();
-    const keys = server.find('routes.*').map(b => b.key);
-    expect(keys).to.eql(['routes.get %2Fhtml', 'routes.get %2Fendpoint']);
+    const keys = server.find('controller-routes.*').map(b => b.key);
+    expect(keys).to.eql([
+      'controller-routes.get %2Fhtml',
+      'controller-routes.get %2Fendpoint',
+    ]);
     for (const key of keys) {
       const controllerRoute = await server.get(key);
       expect(controllerRoute).to.be.instanceOf(ControllerRoute);
     }
+    await server.stop();
+  });
+
+  it('registers controller routes after start', async () => {
+    const server = await givenAServer();
+    await server.start();
+    // No DummyController is present
+    await createClientForHandler(server.requestHandler)
+      .get('/html')
+      .expect(404);
+
+    // Add DummyController after server.start
+    server.controller(DummyController);
+
+    // Now /html is available
+    await createClientForHandler(server.requestHandler)
+      .get('/html')
+      .expect(200);
+
+    // The controller contributes to `controller-routes.*`
+    const keys = server.find('controller-routes.*').map(b => b.key);
+    expect(keys).to.eql([
+      'controller-routes.get %2Fhtml',
+      'controller-routes.get %2Fendpoint',
+    ]);
+    await server.stop();
+  });
+
+  it('removes controller routes after start', async () => {
+    const server = await givenAServer();
+    const binding = server.controller(DummyController);
+    await server.start();
+    // Now /html is available
+    await createClientForHandler(server.requestHandler)
+      .get('/html')
+      .expect(200);
+
+    // Remove DummyController
+    server.unbind(binding.key);
+
+    // Now /html is not available
+    await createClientForHandler(server.requestHandler)
+      .get('/html')
+      .expect(404);
+
+    // `controller-routes.*` should have been removed
+    const keys = server.find('controller-routes.*').map(b => b.key);
+    expect(keys).to.eql([]);
+    await server.stop();
+  });
+
+  it('registers handler routes after start', async () => {
+    const server = await givenAServer();
+    await server.start();
+    // No `/greet` is present
+    await createClientForHandler(server.requestHandler)
+      .get('/greet')
+      .expect(404);
+
+    // Add DummyController after server.start
+    const greetSpec = {
+      responses: {
+        200: {
+          content: {'text/plain': {schema: {type: 'string'}}},
+          description: 'greeting of the day',
+        },
+      },
+    };
+    server.route('get', '/greet', greetSpec, function greet() {
+      return 'Hello';
+    });
+
+    // Now `/greet` is available
+    await createClientForHandler(server.requestHandler)
+      .get('/greet')
+      .expect(200, 'Hello');
+
+    // The route contributes to `routes.*`
+    const keys = server.find('routes.*').map(b => b.key);
+    expect(keys).to.eql(['routes.get %2Fgreet']);
+    await server.stop();
+  });
+
+  it('removes handler routes after start', async () => {
+    const server = await givenAServer();
+    // Add DummyController after server.start
+    const greetSpec = {
+      responses: {
+        200: {
+          content: {'text/plain': {schema: {type: 'string'}}},
+          description: 'greeting of the day',
+        },
+      },
+    };
+    const binding = server.route('get', '/greet', greetSpec, function greet() {
+      return 'Hello';
+    });
+
+    await server.start();
+    // Now `/greet` is available
+    await createClientForHandler(server.requestHandler)
+      .get('/greet')
+      .expect(200, 'Hello');
+
+    server.unbind(binding.key);
+    // Now `/greet` is not available
+    await createClientForHandler(server.requestHandler)
+      .get('/greet')
+      .expect(404);
+
     await server.stop();
   });
 

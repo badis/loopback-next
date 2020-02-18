@@ -9,6 +9,8 @@ import {
   BindingScope,
   Constructor,
   Context,
+  ContextView,
+  filterByKey,
   inject,
 } from '@loopback/context';
 import {Application, CoreBindings, Server} from '@loopback/core';
@@ -146,6 +148,8 @@ export class RestServer extends Context implements Server, HttpServerLike {
     this._setupHandlerIfNeeded();
     return this._httpHandler;
   }
+  private _controllersAndRoutesView?: ContextView;
+
   protected _httpServer: HttpServer | undefined;
 
   protected _expressApp: express.Application;
@@ -338,12 +342,26 @@ export class RestServer extends Context implements Server, HttpServerLike {
   }
 
   protected _setupHandlerIfNeeded() {
-    // TODO(bajtos) support hot-reloading of controllers
-    // after the app started. The idea is to rebuild the HttpHandler
-    // instance whenever a controller was added/deleted.
-    // See https://github.com/strongloop/loopback-next/issues/433
     if (this._httpHandler) return;
+    if (this._controllersAndRoutesView == null) {
+      // Watch for binding events
+      this._controllersAndRoutesView = this.createView(
+        binding =>
+          filterByKey(RestBindings.API_SPEC.key)(binding) ||
+          filterByKey(/^(controllers|routes)\..+/)(binding),
+      );
+    }
+    this._createHttpHandler();
 
+    // See https://github.com/strongloop/loopback-next/issues/433
+    this._controllersAndRoutesView.on('refresh', () => {
+      // Rebuild the HttpHandler instance whenever a controller/route was
+      // added/deleted.
+      this._createHttpHandler();
+    });
+  }
+
+  private _createHttpHandler() {
     /**
      * Check if there is custom router in the context
      */
@@ -351,6 +369,12 @@ export class RestServer extends Context implements Server, HttpServerLike {
     const routingTable = new RoutingTable(router, this._externalRoutes);
 
     this._httpHandler = new HttpHandler(this, this.config, routingTable);
+
+    // Remove `controller-routes.*`
+    for (const b of this.find('controller-routes.*')) {
+      this.unbind(b.key);
+    }
+
     for (const b of this.find('controllers.*')) {
       const controllerName = b.key.replace(/^controllers\./, '');
       const ctor = b.valueConstructor;
@@ -377,7 +401,8 @@ export class RestServer extends Context implements Server, HttpServerLike {
         controllerFactory,
       );
       for (const route of routes) {
-        this.bindRoute(route);
+        this.bindRoute(route, 'controller-routes');
+        this._httpHandler.registerRoute(route);
       }
     }
 
