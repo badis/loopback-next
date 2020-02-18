@@ -1,7 +1,8 @@
-// Copyright IBM Corp. 2019. All Rights Reserved.
-// Node module: @loopback/authentication
+// Copyright IBM Corp. 2020. All Rights Reserved.
+// Node module: @loopback/example-access-control-migration
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
+
 import {HttpErrors} from '@loopback/rest';
 import {UserRepository} from '../repositories/user.repository';
 import {User} from '../models/user.model';

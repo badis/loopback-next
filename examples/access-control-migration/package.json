@@ -20,7 +20,7 @@
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run build",
     "test": "lb-mocha \"dist/__tests__/**/*.js\"",
-    "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
+    "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js",
     "verify": "npm pack && tar xf loopback-access-control-migration*.tgz && tree package && npm run clean",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",

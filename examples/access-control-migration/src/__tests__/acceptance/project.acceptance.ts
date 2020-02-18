@@ -1,10 +1,14 @@
-// Copyright IBM Corp. 2019. All Rights Reserved.
-// Node module: @loopback/example-todo
+// Copyright IBM Corp. 2020. All Rights Reserved.
+// Node module: @loopback/example-access-control-migration
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
 import {AnyObject} from '@loopback/repository';
-import {Client, createRestAppClient} from '@loopback/testlab';
+import {
+  Client,
+  createRestAppClient,
+  givenHttpServerConfig,
+} from '@loopback/testlab';
 import {AccessControlApplication} from '../../';
 
 describe('AccessControlApplication - permissions', () => {
@@ -177,7 +181,9 @@ describe('AccessControlApplication - permissions', () => {
 
   async function givenRunningApplication() {
     process.env.SEED_DATA = '1';
-    app = new AccessControlApplication();
+    app = new AccessControlApplication({
+      rest: givenHttpServerConfig(),
+    });
 
     app.bind('datasources.config.db').to({
       name: 'db',
