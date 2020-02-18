@@ -1,4 +1,4 @@
-# @loopback/example-todo
+# @loopback/example-access-control-migration
 
 This is the basic tutorial for getting started with Loopback 4!
 
