@@ -4,6 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {Application} from '@loopback/core';
+import {anOpenApiSpec, anOperationSpec} from '@loopback/openapi-spec-builder';
 import {
   createClientForHandler,
   createRestAppClient,
@@ -900,18 +901,15 @@ paths:
   it('registers controller routes after start', async () => {
     const server = await givenAServer();
     await server.start();
+    const client = createClientForHandler(server.requestHandler);
     // No DummyController is present
-    await createClientForHandler(server.requestHandler)
-      .get('/html')
-      .expect(404);
+    await client.get('/html').expect(404);
 
     // Add DummyController after server.start
     server.controller(DummyController);
 
     // Now /html is available
-    await createClientForHandler(server.requestHandler)
-      .get('/html')
-      .expect(200);
+    await client.get('/html').expect(200);
 
     // The controller contributes to `routes.*`
     const keys = server.findByTag(RestTags.CONTROLLER_ROUTE).map(b => b.key);
@@ -923,18 +921,15 @@ paths:
     const server = await givenAServer();
     const binding = server.controller(DummyController);
     await server.start();
+    const client = createClientForHandler(server.requestHandler);
     // Now /html is available
-    await createClientForHandler(server.requestHandler)
-      .get('/html')
-      .expect(200);
+    await client.get('/html').expect(200);
 
     // Remove DummyController
     server.unbind(binding.key);
 
     // Now /html is not available
-    await createClientForHandler(server.requestHandler)
-      .get('/html')
-      .expect(404);
+    await client.get('/html').expect(404);
 
     // `routes.*` for controllers should have been removed
     const keys = server.findByTag(RestTags.CONTROLLER_ROUTE).map(b => b.key);
@@ -945,10 +940,9 @@ paths:
   it('registers handler routes after start', async () => {
     const server = await givenAServer();
     await server.start();
+    const client = createClientForHandler(server.requestHandler);
     // No `/greet` is present
-    await createClientForHandler(server.requestHandler)
-      .get('/greet')
-      .expect(404);
+    await client.get('/greet').expect(404);
 
     // Add DummyController after server.start
     const greetSpec = {
@@ -964,9 +958,7 @@ paths:
     });
 
     // Now `/greet` is available
-    await createClientForHandler(server.requestHandler)
-      .get('/greet')
-      .expect(200, 'Hello');
+    await client.get('/greet').expect(200, 'Hello');
 
     // The route contributes to `routes.*`
     const keys = server.find('routes.*').map(b => b.key);
@@ -990,17 +982,48 @@ paths:
     });
 
     await server.start();
+    const client = createClientForHandler(server.requestHandler);
     // Now `/greet` is available
-    await createClientForHandler(server.requestHandler)
-      .get('/greet')
-      .expect(200, 'Hello');
+    await client.get('/greet').expect(200, 'Hello');
 
     server.unbind(binding.key);
     // Now `/greet` is not available
-    await createClientForHandler(server.requestHandler)
-      .get('/greet')
-      .expect(404);
+    await client.get('/greet').expect(404);
 
+    await server.stop();
+  });
+
+  it('updates api spec after start', async () => {
+    class MyController {
+      greet(name: string) {
+        return `hello ${name}`;
+      }
+    }
+
+    const spec = anOpenApiSpec()
+      .withOperation(
+        'get',
+        '/greet',
+        anOperationSpec()
+          .withParameter({name: 'name', in: 'query', type: 'string'})
+          .withExtension('x-operation-name', 'greet')
+          .withExtension('x-controller-name', 'MyController'),
+      )
+      .build();
+
+    const server = await givenAServer();
+    await server.start();
+    const client = createClientForHandler(server.requestHandler);
+
+    // `/greet` is not available
+    await client.get('/greet?name=world').expect(404);
+
+    // Set api spec that adds routes
+    server.api(spec);
+    server.controller(MyController);
+
+    // `/greet` is now available
+    await client.get('/greet?name=world').expect(200, 'hello world');
     await server.stop();
   });
 
@@ -1008,24 +1031,18 @@ paths:
     const server = await givenAServer();
     server.controller(DummyController);
     server.redirect('/page/html', '/html');
-    const response = await createClientForHandler(server.requestHandler)
-      .get('/page/html')
-      .expect(303);
-    await createClientForHandler(server.requestHandler)
-      .get(response.header.location)
-      .expect(200, 'Hi');
+    const client = createClientForHandler(server.requestHandler);
+    const response = await client.get('/page/html').expect(303);
+    await client.get(response.header.location).expect(200, 'Hi');
   });
 
   it('creates a redirect route with a custom status code', async () => {
     const server = await givenAServer();
     server.controller(DummyController);
     server.redirect('/page/html', '/html', 307);
-    const response = await createClientForHandler(server.requestHandler)
-      .get('/page/html')
-      .expect(307);
-    await createClientForHandler(server.requestHandler)
-      .get(response.header.location)
-      .expect(200, 'Hi');
+    const client = createClientForHandler(server.requestHandler);
+    const response = await client.get('/page/html').expect(307);
+    await client.get(response.header.location).expect(200, 'Hi');
   });
 
   describe('basePath', () => {
