@@ -34,6 +34,7 @@ import {
   RestServer,
   RestServerConfig,
 } from '../..';
+import {RestTags} from '../../keys';
 const readFileAsync = util.promisify(fs.readFile);
 
 const FIXTURES = path.resolve(__dirname, '../../../fixtures');
@@ -887,11 +888,8 @@ paths:
     const server = await givenAServer();
     server.controller(DummyController);
     await server.start();
-    const keys = server.find('controller-routes.*').map(b => b.key);
-    expect(keys).to.eql([
-      'controller-routes.get %2Fhtml',
-      'controller-routes.get %2Fendpoint',
-    ]);
+    const keys = server.findByTag(RestTags.CONTROLLER_ROUTE).map(b => b.key);
+    expect(keys).to.eql(['routes.get %2Fhtml', 'routes.get %2Fendpoint']);
     for (const key of keys) {
       const controllerRoute = await server.get(key);
       expect(controllerRoute).to.be.instanceOf(ControllerRoute);
@@ -915,12 +913,9 @@ paths:
       .get('/html')
       .expect(200);
 
-    // The controller contributes to `controller-routes.*`
-    const keys = server.find('controller-routes.*').map(b => b.key);
-    expect(keys).to.eql([
-      'controller-routes.get %2Fhtml',
-      'controller-routes.get %2Fendpoint',
-    ]);
+    // The controller contributes to `routes.*`
+    const keys = server.findByTag(RestTags.CONTROLLER_ROUTE).map(b => b.key);
+    expect(keys).to.eql(['routes.get %2Fhtml', 'routes.get %2Fendpoint']);
     await server.stop();
   });
 
@@ -941,8 +936,8 @@ paths:
       .get('/html')
       .expect(404);
 
-    // `controller-routes.*` should have been removed
-    const keys = server.find('controller-routes.*').map(b => b.key);
+    // `routes.*` for controllers should have been removed
+    const keys = server.findByTag(RestTags.CONTROLLER_ROUTE).map(b => b.key);
     expect(keys).to.eql([]);
     await server.stop();
   });
