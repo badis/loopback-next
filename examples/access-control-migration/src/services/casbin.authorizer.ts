@@ -13,6 +13,7 @@ import {
 import {inject, Provider} from '@loopback/core';
 import * as casbin from 'casbin';
 const debug = require('debug')('loopback:example:acl');
+const DEFAULT_SCOPE = 'execute';
 
 // Class level authorizer
 export class CasbinAuthorizationProvider implements Provider<Authorizer> {
@@ -41,7 +42,7 @@ export class CasbinAuthorizationProvider implements Provider<Authorizer> {
     const request: AuthorizationRequest = {
       subject,
       object,
-      action: (metadata.scopes && metadata.scopes[0]) || 'execute',
+      action: (metadata.scopes && metadata.scopes[0]) || DEFAULT_SCOPE,
     };
 
     const allowedRoles = metadata.allowedRoles;
@@ -77,7 +78,7 @@ export class CasbinAuthorizationProvider implements Provider<Authorizer> {
 
   // Generate the user name according to the naming convention
   // in casbin policy
-  // A use's name would be `u${id}`
+  // A user's name would be `u${id}`
   getUserName(id: number): string {
     return `u${id}`;
   }

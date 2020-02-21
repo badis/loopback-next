@@ -3,14 +3,14 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {BindingKey} from '@loopback/context';
 import {TokenService, UserService} from '@loopback/authentication';
+import {BindingKey} from '@loopback/context';
 import {User} from './models';
 import {Credentials} from './services/user.service';
 
 export namespace TokenServiceConstants {
   export const TOKEN_SECRET_VALUE = 'myjwts3cr3t';
-  export const TOKEN_EXPIRES_IN_VALUE = '600';
+  export const TOKEN_EXPIRES_IN_VALUE = '21600';
 }
 
 export namespace TokenServiceBindings {
