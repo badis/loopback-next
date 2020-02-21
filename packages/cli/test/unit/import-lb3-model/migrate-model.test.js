@@ -77,6 +77,27 @@ describe('importLb3ModelDefinition', () => {
     });
   });
 
+  context('model attached to a datasource', () => {
+    let modelData;
+
+    before(function setupLb3AppWithDatasource() {
+      const MyModel = givenLb3Model('MyModel', {name: 'string'}, {}, {
+        connector: 'postgres'
+      });
+      modelData = importLb3ModelDefinition(MyModel, log);
+    });
+
+    it('normalizes custom property', () => {
+      expect(modelData.properties)
+        .to.have.property('name')
+        .deepEqual({
+          type: `'string'`,
+          tsType: 'string',
+        });
+    });
+
+  });
+
   context('array properties', () => {
     it('correctly converts short-hand definition', () => {
       const MyModel = givenLb3Model('MyModel', {
